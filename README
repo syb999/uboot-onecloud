@@ -1,9 +1,32 @@
 ## OneCloud u-boot 
+测试环境:deepin 22.09
+请先安装32位的zlib库
+sudo apt-get update
+sudo apt-get install zlib1g:i386
 
-```bash
+
+打开shell:
+wget https://github.com/syb999/uboot-onecloud/archive/refs/heads/main.zip
+unzip main.zip
+cd main
 tar xvf ./gcc-linaro-arm-none-eabi-4.8-2014.04_linux.tar.xz
 export PATH="$PATH:$(pwd)/gcc-linaro-arm-none-eabi-4.8-2014.04_linux/bin"
 make distclean
 make m8b_onecloud_config
 make
-```
+
+./AmlImg res_pack build/resource.img resource/
+cp build/ddr_init.bin pack/DDR.USB
+cp build/u-boot-comp.bin pack/UBOOT_COMP.USB
+
+cp build/u-boot.bin pack/bootloader.img
+echo -n "sha1sum $(sha1sum pack/bootloader.img | awk '{print $1}')" >pack/bootloader.VERIFY
+
+cp build/resource.img pack/resource.img
+echo -n "sha1sum $(sha1sum pack/resource.img | awk '{print $1}')" >pack/resource.VERIFY
+
+./AmlImg pack build/eMMC.burn.img pack/
+运行后，会在build目录生成目标文件eMMC.burn.img(即支持只从emmc启动玩客云的uboot.img)。
+
+
+
